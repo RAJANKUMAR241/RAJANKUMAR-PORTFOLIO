@@ -356,72 +356,7 @@
         </ul>
       </div>
     </section>
-    <!-- ================================================================= -->
-    <!-- PRIVATE DREAM VAULT SECTION (ADD THIS BELOW PROJECTS SECTION) -->
-    <!-- ================================================================= -->
-    <section class="py-12 px-6 max-w-4xl mx-auto text-center">
-        <!-- Dream Vault Lock Button -->
-        <div class="glass-card p-6 rounded-2xl border border-purple-500/20 shadow-lg">
-            <h3 class="text-xl font-bold text-gray-200 mb-2">🔒 Private Archive & Future Vision</h3>
-            <p class="text-xs text-gray-400 mb-4">Secured node for personal long-term goals and restricted research notes.</p>
-            
-            <button onclick="openDreamVault()" id="vaultBtn" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 mx-auto shadow-lg hover:scale-105 transition">
-                <i class="fa-solid fa-key"></i> Unlock Private Vision Vault
-            </button>
-            <p id="vaultStatus" class="text-sm text-red-400 mt-3 font-mono font-semibold"></p>
-        </div>
-
-        <!-- Hidden Secret Content (Access Granted hone par hi khulega) -->
-        <div id="dreamVaultContent" class="hidden text-left max-w-3xl mx-auto p-6 bg-gray-900/90 border border-purple-500/40 rounded-2xl my-6 backdrop-blur-md">
-            <h3 class="text-2xl font-bold text-purple-400 mb-4 flex items-center gap-2">
-                ✨ My Private Vision & Dream Goals
-            </h3>
-            <ul class="list-disc list-inside text-gray-300 space-y-3 text-sm font-sans">
-                <li>🚀 <strong class="text-white">Future Goal 1:</strong> Build and scale Cure Sigma into a global health-tech standard.</li>
-                <li>🏛️ <strong class="text-white">Future Goal 2:</strong> Expand research in computational AI and interdisciplinary sciences.</li>
-                <li>💡 <strong class="text-white">Vision Note:</strong> Archive key milestones and private long-term roadmaps.</li>
-            </ul>
-        </div>
-    </section>
-
-    <!-- Security Logic (Script) -->
-    <script>
-    let attempts = 0;
-    const maxAttempts = 3;
-    const correctPassword = "RAja90#*@"; //
-
-    function openDreamVault() {
-        if (attempts >= maxAttempts) {
-            document.getElementById("vaultStatus").innerText = "⚠️ Access Locked! Tumhare maximum 3 attempts khatam ho gaye hain.";
-            document.getElementById("vaultBtn").disabled = true;
-            document.getElementById("vaultBtn").classList.add("opacity-50", "cursor-not-allowed");
-            return;
-        }
-
-        let userPass = prompt("Enter Secret Access Key:");
-
-        if (userPass === correctPassword) {
-            alert("Access Granted! Welcome to your Vision Vault.");
-            document.getElementById("dreamVaultContent").classList.remove("hidden");
-            document.getElementById("vaultStatus").innerText = "✅ Access Granted (Vault Unlocked)";
-            document.getElementById("vaultStatus").classList.remove("text-red-400");
-            document.getElementById("vaultStatus").classList.add("text-green-400");
-        } else {
-            attempts++;
-            let remaining = maxAttempts - attempts;
-            if (remaining > 0) {
-                alert(`Wrong Password! ${remaining} attempt(s) remaining.`);
-                document.getElementById("vaultStatus").innerText = `⚠️ Wrong password! Attempts left: ${remaining}`;
-            } else {
-                alert("Limit exceeded! Access permanently locked for this session.");
-                document.getElementById("vaultStatus").innerText = "⚠️ Tumhare limits khatam ho gaye hain. Access Locked!";
-                document.getElementById("vaultBtn").disabled = true;
-                document.getElementById("vaultBtn").classList.add("opacity-50", "cursor-not-allowed");
-            }
-        }
-    }
-    </script>
-
+    
     <!-- Pre-College & Summer Programs -->
     <section id="programs">
       <h2 class="section-title">🏛️ Pre-College & Research Programs</h2>
