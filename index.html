@@ -335,6 +335,148 @@
         <a href="https://docs.google.com/document/d/1RKAeCZ3REXZTopTLMRNUjpKaPC6t72to24CtxZPX5m0/edit?usp=sharing" target="_blank" class="btn-secondary">
   📜 View Certificates & Proofs (PDF)
 </a>
+        <!-- 1. SECRET ICON BUTTON (Put this right next to your Pi / Button row) -->
+<button onclick="toggleVaultModal()" style="background: none; border: none; cursor: pointer; color: #9ca3af; font-size: 20px; font-family: monospace; padding: 4px 8px;" title="Restricted Archive">
+    🔓
+</button>
+
+<!-- 2. STYLED POP-UP MODAL OVERLAY (Pure CSS - Always Center & Hidden by Default) -->
+<div id="vaultModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 99999; justify-content: center; align-items: center; padding: 16px;">
+    
+    <!-- Modal Content Box -->
+    <div style="background: #0f172a; border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 16px; padding: 28px; max-width: 480px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.8); position: relative; font-family: sans-serif; text-align: left; color: #f3f4f6;">
+        
+        <!-- Close Button (X) -->
+        <button onclick="toggleVaultModal()" style="position: absolute; top: 16px; right: 20px; background: none; border: none; color: #9ca3af; font-size: 24px; cursor: pointer;">&times;</button>
+
+        <!-- STEP A: LOGIN FORM -->
+        <div id="vaultLoginForm">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                <div style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.3); padding: 10px; border-radius: 12px; color: #22d3ee; font-size: 20px;">
+                    🛡️
+                </div>
+                <div>
+                    <h3 style="font-size: 20px; font-weight: 700; color: #ffffff; margin: 0;">Private Vision Portal</h3>
+                    <p style="font-size: 12px; color: #9ca3af; margin: 2px 0 0 0;">Restricted Node • Personal Archive</p>
+                </div>
+            </div>
+
+            <p style="font-size: 13px; color: #9ca3af; line-height: 1.5; margin-bottom: 16px;">
+                Enter your authorization key to access private roadmaps and research goals.
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <input type="password" id="vaultPassInput" placeholder="Enter Secret Passkey..." 
+                    style="width: 100%; background: #1e293b; border: 1px solid #334155; color: #ffffff; font-size: 14px; border-radius: 10px; padding: 12px 14px; outline: none; box-sizing: border-box;">
+
+                <button onclick="authenticateVault()" id="loginSubmitBtn"
+                    style="width: 100%; background: linear-gradient(to right, #0891b2, #2563eb); border: none; color: #ffffff; font-weight: 600; font-size: 14px; padding: 12px; border-radius: 10px; cursor: pointer; transition: 0.2s;">
+                    Authenticate Access
+                </button>
+
+                <p id="vaultAlert" style="font-size: 12px; color: #f87171; font-family: monospace; text-align: center; margin: 4px 0 0 0; font-weight: 600; min-height: 16px;"></p>
+            </div>
+        </div>
+
+        <!-- STEP B: SECRET DASHBOARD -->
+        <div id="vaultDashboard" style="display: none; flex-direction: column; gap: 14px;">
+            <div style="border-bottom: 1px solid #1e293b; padding-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="font-size: 18px; font-weight: 700; color: #22d3ee; margin: 0;">✨ Vision & Long-Term Roadmap</h3>
+                <span style="font-size: 10px; font-family: monospace; background: rgba(34, 197, 94, 0.1); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 8px; border-radius: 4px;">
+                    AUTHENTICATED
+                </span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto;">
+                <div style="background: rgba(30, 41, 59, 0.7); padding: 12px; border-radius: 10px; border: 1px solid rgba(51, 65, 85, 0.6);">
+                    <p style="font-size: 12px; color: #67e8f9; font-weight: 600; margin: 0 0 4px 0;">🚀 Core Milestone</p>
+                    <p style="font-size: 13px; color: #cbd5e1; margin: 0;">Scale Cure Sigma into an AI-driven emergency medical response network.</p>
+                </div>
+                <div style="background: rgba(30, 41, 59, 0.7); padding: 12px; border-radius: 10px; border: 1px solid rgba(51, 65, 85, 0.6);">
+                    <p style="font-size: 12px; color: #a5b4fc; font-weight: 600; margin: 0 0 4px 0;">🏛️ Academic Focus</p>
+                    <p style="font-size: 13px; color: #cbd5e1; margin: 0;">Expand research initiatives in deep learning, math logic, and computational systems.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- 3. SECURITY SCRIPT -->
+<script>
+const SECRET_PASS = "RAja90#*@321"; //
+const MAX_ATTEMPTS = 3;
+const LOCKOUT_TIME_MS = 24 * 60 * 60 * 1000; // 24 Hours
+
+function toggleVaultModal() {
+    const modal = document.getElementById("vaultModal");
+    if (modal.style.display === "none" || modal.style.display === "") {
+        modal.style.display = "flex";
+        checkLockoutStatus();
+    } else {
+        modal.style.display = "none";
+    }
+}
+
+function checkLockoutStatus() {
+    const lockTimestamp = localStorage.getItem("vault_lockout_time");
+    const alertBox = document.getElementById("vaultAlert");
+    const submitBtn = document.getElementById("loginSubmitBtn");
+    const passInput = document.getElementById("vaultPassInput");
+
+    if (lockTimestamp) {
+        const timePassed = Date.now() - parseInt(lockTimestamp);
+        
+        if (timePassed < LOCKOUT_TIME_MS) {
+            const hoursLeft = Math.ceil((LOCKOUT_TIME_MS - timePassed) / (1000 * 60 * 60));
+            alertBox.innerText = `⚠️ Maximum limit reached! Try again in ${hoursLeft} hour(s).`;
+            submitBtn.disabled = true;
+            passInput.disabled = true;
+            submitBtn.style.opacity = "0.4";
+            submitBtn.style.cursor = "not-allowed";
+            return true;
+        } else {
+            localStorage.removeItem("vault_lockout_time");
+            localStorage.setItem("vault_attempts", "0");
+            submitBtn.disabled = false;
+            passInput.disabled = false;
+            submitBtn.style.opacity = "1";
+            submitBtn.style.cursor = "pointer";
+            alertBox.innerText = "";
+        }
+    }
+    return false;
+}
+
+function authenticateVault() {
+    if (checkLockoutStatus()) return;
+
+    let attempts = parseInt(localStorage.getItem("vault_attempts") || "0");
+    const inputPass = document.getElementById("vaultPassInput").value;
+    const alertBox = document.getElementById("vaultAlert");
+
+    if (inputPass === SECRET_PASS) {
+        localStorage.setItem("vault_attempts", "0");
+        document.getElementById("vaultLoginForm").style.display = "none";
+        document.getElementById("vaultDashboard").style.display = "flex";
+    } else {
+        attempts++;
+        localStorage.setItem("vault_attempts", attempts.toString());
+        
+        if (attempts >= MAX_ATTEMPTS) {
+            localStorage.setItem("vault_lockout_time", Date.now().toString());
+            alertBox.innerText = "⚠️ Limit exceeded! Access locked for 24 hours.";
+            document.getElementById("loginSubmitBtn").disabled = true;
+            document.getElementById("vaultPassInput").disabled = true;
+            document.getElementById("loginSubmitBtn").style.opacity = "0.4";
+            document.getElementById("loginSubmitBtn").style.cursor = "not-allowed";
+        } else {
+            const remaining = MAX_ATTEMPTS - attempts;
+            alertBox.innerText = `⚠️ Invalid passkey! ${remaining} attempt(s) left.`;
+        }
+    }
+}
+</script>
         
       </div>
     </section>
