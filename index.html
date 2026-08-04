@@ -335,6 +335,151 @@
         <a href="https://docs.google.com/document/d/1RKAeCZ3REXZTopTLMRNUjpKaPC6t72to24CtxZPX5m0/edit?usp=sharing" target="_blank" class="btn-secondary">
   📜 View Certificates & Proofs (PDF)
 </a>
+        <!-- 1. SECRET ICON BUTTON (Put this right next to your Pi / Button row) -->
+<button onclick="toggleVaultModal()" class="text-gray-400 hover:text-cyan-400 text-lg transition-transform hover:scale-125 px-2 py-1" title="Restricted Archive">
+    🔒 <!-- Ya phir 'π' likh sakte ho -->
+</button>
+
+<!-- 2. POP-UP MODAL & DASHBOARD OVERLAY -->
+<div id="vaultModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden flex items-center justify-center z-50 p-4">
+    
+    <!-- Modal Card Container -->
+    <div class="bg-gray-900 border border-cyan-500/30 rounded-2xl p-6 md:p-8 max-w-lg w-full shadow-2xl relative text-left">
+        
+        <!-- Close Modal Button -->
+        <button onclick="toggleVaultModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">
+            &times;
+        </button>
+
+        <!-- STEP A: LOGIN INTERFACE -->
+        <div id="vaultLoginForm">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-xl text-cyan-400">
+                    <i class="fa-solid fa-shield-halved text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-white">Private Vision Portal</h3>
+                    <p class="text-xs text-gray-400">Restricted Node • Personal Archive</p>
+                </div>
+            </div>
+
+            <p class="text-xs text-gray-400 mb-4 leading-relaxed">
+                Enter your authorization key to access private roadmaps and research goals.
+            </p>
+
+            <div class="space-y-4">
+                <input type="password" id="vaultPassInput" placeholder="Enter Secret Passkey..." 
+                    class="w-full bg-gray-800 border border-gray-700 focus:border-cyan-500 text-white text-sm rounded-xl px-4 py-3 outline-none transition">
+
+                <button onclick="authenticateVault()" id="loginSubmitBtn"
+                    class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-cyan-600/20 text-sm">
+                    Authenticate Access
+                </button>
+
+                <p id="vaultAlert" class="text-xs text-red-400 font-mono text-center font-medium"></p>
+            </div>
+        </div>
+
+        <!-- STEP B: SECRET DASHBOARD (Visible only after correct password) -->
+        <div id="vaultDashboard" class="hidden space-y-4">
+            <div class="border-b border-gray-800 pb-3 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-cyan-400 flex items-center gap-2">
+                    ✨ Vision & Long-Term Roadmap
+                </h3>
+                <span class="text-[10px] font-mono bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 rounded">
+                    AUTHENTICATED
+                </span>
+            </div>
+
+            <div class="space-y-3 text-sm text-gray-300 max-h-60 overflow-y-auto pr-1">
+                <div class="p-3 bg-gray-800/60 rounded-xl border border-gray-700/50">
+                    <p class="text-xs text-cyan-300 font-semibold mb-1">🚀 Core Milestone</p>
+                    <p class="text-xs">Scale Cure Sigma into an AI-driven emergency medical response network.</p>
+                </div>
+                <div class="p-3 bg-gray-800/60 rounded-xl border border-gray-700/50">
+                    <p class="text-xs text-indigo-300 font-semibold mb-1">🏛️ Academic Focus</p>
+                    <p class="text-xs">Expand research initiatives in deep learning, math logic, and computational systems.</p>
+                </div>
+                <div class="p-3 bg-gray-800/60 rounded-xl border border-gray-700/50">
+                    <p class="text-xs text-purple-300 font-semibold mb-1">💡 Future Ventures</p>
+                    <p class="text-xs">Archive key milestones, research documentation, and personal goals for future review.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- 3. SECURITY LOGIC (24-HOUR LOCKOUT & ATTEMPT TRACKER) -->
+<script>
+const SECRET_PASS = "RAja90#*@"; //
+const MAX_ATTEMPTS = 3;
+const LOCKOUT_TIME_MS = 24 * 60 * 60 * 1000; // Exact 24 Hours in milliseconds
+
+function toggleVaultModal() {
+    const modal = document.getElementById("vaultModal");
+    modal.classList.toggle("hidden");
+    checkLockoutStatus();
+}
+
+function checkLockoutStatus() {
+    const lockTimestamp = localStorage.getItem("vault_lockout_time");
+    const alertBox = document.getElementById("vaultAlert");
+    const submitBtn = document.getElementById("loginSubmitBtn");
+    const passInput = document.getElementById("vaultPassInput");
+
+    if (lockTimestamp) {
+        const timePassed = Date.now() - parseInt(lockTimestamp);
+        
+        if (timePassed < LOCKOUT_TIME_MS) {
+            const hoursLeft = Math.ceil((LOCKOUT_TIME_MS - timePassed) / (1000 * 60 * 60));
+            alertBox.innerText = `⚠️ Maximum limit reached! Access locked. Try again in ${hoursLeft} hour(s).`;
+            submitBtn.disabled = true;
+            passInput.disabled = true;
+            submitBtn.classList.add("opacity-40", "cursor-not-allowed");
+            return true;
+        } else {
+            // 24 hours over, reset state
+            localStorage.removeItem("vault_lockout_time");
+            localStorage.setItem("vault_attempts", "0");
+            submitBtn.disabled = false;
+            passInput.disabled = false;
+            submitBtn.classList.remove("opacity-40", "cursor-not-allowed");
+            alertBox.innerText = "";
+        }
+    }
+    return false;
+}
+
+function authenticateVault() {
+    if (checkLockoutStatus()) return;
+
+    let attempts = parseInt(localStorage.getItem("vault_attempts") || "0");
+    const inputPass = document.getElementById("vaultPassInput").value;
+    const alertBox = document.getElementById("vaultAlert");
+
+    if (inputPass === SECRET_PASS) {
+        // Reset attempts on success
+        localStorage.setItem("vault_attempts", "0");
+        document.getElementById("vaultLoginForm").classList.add("hidden");
+        document.getElementById("vaultDashboard").classList.remove("hidden");
+    } else {
+        attempts++;
+        localStorage.setItem("vault_attempts", attempts.toString());
+        
+        if (attempts >= MAX_ATTEMPTS) {
+            localStorage.setItem("vault_lockout_time", Date.now().toString());
+            alertBox.innerText = "⚠️ Attempt limit exceeded! Access locked for 24 hours.";
+            document.getElementById("loginSubmitBtn").disabled = true;
+            document.getElementById("vaultPassInput").disabled = true;
+            document.getElementById("loginSubmitBtn").classList.add("opacity-40", "cursor-not-allowed");
+        } else {
+            const remaining = MAX_ATTEMPTS - attempts;
+            alertBox.innerText = `⚠️ Invalid passkey! ${remaining} attempt(s) remaining.`;
+        }
+    }
+}
+</script>
       </div>
     </section>
 
